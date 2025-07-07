@@ -6,7 +6,7 @@ import {
   useColorScheme,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TopicBubble from './scr/components/TopicBubble';
 
 type Topic = {
@@ -35,7 +35,7 @@ const getStyles = (isDarkMode: boolean) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor:  isDarkMode ? 'black' : 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
     },
     flatListContainer: {
       flexDirection: 'row',
@@ -53,19 +53,21 @@ const App = () => {
   const styles = getStyles(isDarkMode);
 
   return (
-    <SafeAreaView edges={['top']} style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+    <SafeAreaProvider>
+      <SafeAreaView edges={['top']} style={styles.container}>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
 
-      <Text style={styles.textColor}>Welcome to the Topics Screen!</Text>
-      <Text style={styles.textColor}>Welcome to the Topics Screen!</Text>
+        <Text style={styles.textColor}>Welcome to the Topics Screen!</Text>
+        <Text style={styles.textColor}>Welcome to the Topics Screen!</Text>
 
-      <FlatList
-        data={topics}
-        contentContainerStyle={styles.flatListContainer}
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => <TopicBubble topicName={item.name} />}
-      />
-    </SafeAreaView>
+        <FlatList
+          data={topics}
+          contentContainerStyle={styles.flatListContainer}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => <TopicBubble topicName={item.name} />}
+        />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
