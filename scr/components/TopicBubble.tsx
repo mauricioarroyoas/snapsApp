@@ -1,34 +1,35 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 
 const styles = StyleSheet.create({
-  bubble: {
-    minWidth: 80,
-    alignItems: 'center',
+  topicBubble: {
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 14,
+    backgroundColor: '#3A3B47',
     borderRadius: 20,
   },
   bubbleText: {
     fontWeight: 'bold',
-    color: '#333',
+    color: 'white',
   },
-  backgorundPressedColor: {
-    backgroundColor: '#1DB954',
+  topicBubblePressed: {
+    backgroundColor: '#0040D3',
   },
-
-  textColor: {
+  bubbleTextPressed: {
     color: 'white',
   },
 });
 
 interface TopicBubbleProps {
   topicName: string;
+  containerStyle?: ViewStyle;
 }
 
-const TopicBubble = ({ topicName }: TopicBubbleProps) => {
+const TopicBubble = ({ topicName, containerStyle }: TopicBubbleProps) => {
   const [isSelected, setIsSelected] = useState(false);
 
   const handlePress = () => {
@@ -37,10 +38,16 @@ const TopicBubble = ({ topicName }: TopicBubbleProps) => {
 
   return (
     <Pressable
-      style={[styles.bubble, isSelected && styles.backgorundPressedColor]}
+      style={[
+        styles.topicBubble,
+        isSelected && styles.topicBubblePressed,
+        containerStyle,
+      ]}
       onPress={handlePress}
     >
-      <Text style={styles.bubbleText}>{topicName}</Text>
+      <Text style={[styles.bubbleText, isSelected && styles.bubbleTextPressed]}>
+        {topicName}
+      </Text>
     </Pressable>
   );
 };
