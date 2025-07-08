@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TopicBubble from './src/components/TopicBubble';
-import { getColors } from './src/components/styles/colors';
-import { globalStyles } from './src/components/styles/globalStyles';
+import { getColors } from './src/styles/colors';
+import { globalStyles } from './src/styles/globalStyles';
 import { useState } from 'react';
 const getStyles = (isDarkMode: boolean) => {
   const colors = getColors(isDarkMode);

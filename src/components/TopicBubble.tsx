@@ -6,8 +6,8 @@ import {
   useColorScheme,
   ViewStyle,
 } from 'react-native';
-import { getColors } from './styles/colors';
-import { globalStyles } from './styles/globalStyles';
+import { getColors } from '../styles/colors';
+import { globalStyles } from '../styles/globalStyles';
 import { Topic } from '../../App';
 
 const getStyles = (isDarkMode: boolean) => {
