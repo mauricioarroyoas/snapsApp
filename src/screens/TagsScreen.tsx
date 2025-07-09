@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FlatList,
   Pressable,
@@ -7,14 +7,17 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import TopicBubble from '../components/TopicBubble';
+import TagBubble from '../components/TagBubble';
+import { fetchTags } from '../services/TagService';
+import { assignTagsToUser } from '../services/UserService';
+import { Tag } from '../models/Tag';
 import { getColors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 const getStyles = (isDarkMode: boolean) => {
   const colors = getColors(isDarkMode);
 
   return StyleSheet.create({
-    topicsScreen: {
+    tagsScreen: {
       flex: 1,
       display: 'flex',
       flexDirection: 'column',
@@ -36,13 +39,13 @@ const getStyles = (isDarkMode: boolean) => {
       flex: 1,
       padding: 10,
     },
-    topicsList: {
+    tagsList: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'stretch',
       rowGap: 20,
     },
-    topicItemWrapper: {
+    tagItemWrapper: {
       width: '48%',
       marginHorizontal: '1%',
       paddingHorizontal: 2,
@@ -70,27 +73,42 @@ const getStyles = (isDarkMode: boolean) => {
   });
 };
 
-const TopicsScreen = () => {
+const TagsScreen = () => {
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const isDarkMode = useColorScheme() === 'dark';
-  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([]);
   const styles = getStyles(isDarkMode);
 
-  const handleOnPressTopicBubble = (topicId: number) => {
-    const topic = topics.find(t => t.id === topicId)!;
-    const alreadyAdded = selectedTopics.some(t => t.id === topic.id);
+  useEffect(() => {
+    fetchTags().then(tagsData => {
+      setTags(tagsData);
+    });
+  }, []);
 
-    let newTopics: Topic[] = [];
+  const handleOnPressTagBubble = (tagId: string) => {
+    const tag = tags.find(t => t.id === tagId)!;
+    const alreadyAdded = selectedTags.some(t => t.id === tag.id);
+
+    let newTags: Tag[] = [];
     if (alreadyAdded) {
-      newTopics = selectedTopics.filter(t => t.id !== topicId);
-      setSelectedTopics(newTopics);
+      newTags = selectedTags.filter(t => t.id !== tagId);
+      setSelectedTags(newTags);
     } else {
-      newTopics = [...selectedTopics, topic];
-      setSelectedTopics(newTopics);
+      newTags = [...selectedTags, tag];
+      setSelectedTags(newTags);
     }
   };
 
+  const handleOnPressContinue = async () => {
+    try {
+      const userId = 'ad2a582a-1d58-4cc5-a419-5d30fb501e5a';
+      const tagIds = selectedTags.map(t => t.id);
+      await assignTagsToUser(userId, tagIds);
+    } catch (error) {}
+  };
+
   return (
-    <View style={styles.topicsScreen}>
+    <View style={styles.tagsScreen}>
       <View style={styles.titleContainer}>
         <Text
           style={[
@@ -114,16 +132,16 @@ const TopicsScreen = () => {
       <View style={globalStyles.separator} />
       <View style={styles.contentContainer}>
         <FlatList
-          data={topics}
+          data={tags}
           numColumns={2}
-          contentContainerStyle={styles.topicsList}
+          contentContainerStyle={styles.tagsList}
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
-            <View key={item.id} style={styles.topicItemWrapper}>
-              <TopicBubble
-                topic={item}
+            <View key={item.id} style={styles.tagItemWrapper}>
+              <TagBubble
+                tag={item}
                 containerStyle={styles.bubbleWidth}
-                onPress={() => handleOnPressTopicBubble(item.id)}
+                onPress={() => handleOnPressTagBubble(item.id)}
               />
             </View>
           )}
@@ -131,13 +149,15 @@ const TopicsScreen = () => {
       </View>
       <View style={styles.buttonContainer}>
         <Pressable
-          disabled={selectedTopics.length === 0}
+          testID="continue-button"
+          disabled={selectedTags.length === 0}
           style={({ pressed }) => [
             globalStyles.button,
             styles.buttonPrimary,
             pressed && styles.buttonPrimaryPressed,
-            selectedTopics.length === 0 && styles.buttonPrimaryDisabled,
+            selectedTags.length === 0 && styles.buttonPrimaryDisabled,
           ]}
+          onPress={handleOnPressContinue}
         >
           <Text
             style={[
@@ -153,26 +173,4 @@ const TopicsScreen = () => {
     </View>
   );
 };
-export default TopicsScreen;
-
-export type Topic = {
-  id: number;
-  name: string;
-};
-const topics: Topic[] = [
-  { id: 1, name: 'Coffee' },
-  { id: 2, name: 'After Office' },
-  { id: 3, name: 'Pets' },
-  { id: 4, name: 'Fitness' },
-  { id: 5, name: 'Snacks' },
-  { id: 6, name: 'Office Decor' },
-  { id: 7, name: 'Music' },
-  { id: 8, name: 'Birthdays' },
-  { id: 9, name: 'Gaming' },
-  { id: 10, name: 'Futbol' },
-  { id: 11, name: 'Meme Time' },
-  { id: 12, name: 'Lunch Time' },
-  { id: 13, name: 'New Joiner' },
-  { id: 14, name: 'Anime' },
-  { id: 15, name: 'Technology' },
-];
+export default TagsScreen;

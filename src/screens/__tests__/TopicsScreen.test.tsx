@@ -1,27 +1,38 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
-import TopicsScreen from '../TopicsScreen';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import TagsScreen from '../TagsScreen';
+import { fetchTags } from '../../services/TagService';
 
-describe('TopicsScreen', () => {
-  it('renders the title, subtitle, all topics, and disables Continue   ', () => {
-    const { getByText, queryAllByText } = render(<TopicsScreen />);
+jest.mock('../../services/TagService');
+const mockTags = [
+  { id: '1', name: 'Coffee' },
+  { id: '2', name: 'Tea' },
+];
 
+describe('TagsScreen', () => {
+  beforeEach(() => {
+    (fetchTags as jest.Mock).mockResolvedValue(mockTags);
+  });
+
+  it('renders the title, subtitle, all tags, and disables Continue', async () => {
+    const { getByText, queryAllByText } = render(<TagsScreen />);
+
+    await waitFor(() => {expect(getByText('Coffee')).toBeTruthy();});
     expect(getByText('Tags')).toBeTruthy();
     expect(getByText('Choose at least one')).toBeTruthy();
-    expect(queryAllByText('Coffee')).toBeTruthy();
-    expect(queryAllByText('Futbol')).toBeTruthy();
-    expect(queryAllByText('Anime')).toBeTruthy();
+    expect(queryAllByText('Coffee').length).toBeGreaterThan(0);
     expect(getByText('Continue')).toBeTruthy();
   });
 
- it('enables Continue button after selecting a topic', () => {
-    const { getByText} = render(<TopicsScreen />);
+  it('enables Continue button after selecting a tag', async () => {
+    const { getByTestId, getByText } = render(<TagsScreen />);
+    
+    await waitFor(() => {expect(getByText('Coffee')).toBeTruthy();});
 
-    const continueButton = getByText('Continue').parent!;
-    expect(continueButton.props.accessibilityState?.disabled || continueButton.props.disabled).toBe(true);
-    const coffeeBubble = getByText('Coffee');
-    fireEvent.press(coffeeBubble);
+    const continueButton = getByTestId('continue-button');
+    expect(continueButton.props.accessibilityState?.disabled).toBe(true);
 
-    expect(continueButton.props.accessibilityState?.disabled || continueButton.props.disabled).toBe(false);
+    fireEvent.press(getByText('Coffee'));
+    await waitFor(() => {expect(continueButton.props.accessibilityState?.disabled).toBe(false);});
   });
 });
