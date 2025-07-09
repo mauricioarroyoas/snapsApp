@@ -10,9 +10,12 @@ import {
 import TagBubble from '../components/TagBubble';
 import { fetchTags } from '../services/TagService';
 import { assignTagsToUser } from '../services/UserService';
+import { User } from '../models/User';
 import { Tag } from '../models/Tag';
 import { getColors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
+import { getLoggedInUser } from '../services/AuthorizationService';
+
 const getStyles = (isDarkMode: boolean) => {
   const colors = getColors(isDarkMode);
 
@@ -75,11 +78,15 @@ const getStyles = (isDarkMode: boolean) => {
 
 const TagsScreen = () => {
   const [tags, setTags] = useState<Tag[]>([]);
+  const [user, setUser] = useState<User | undefined>(undefined);
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const isDarkMode = useColorScheme() === 'dark';
   const styles = getStyles(isDarkMode);
 
   useEffect(() => {
+    const loggedInUser = getLoggedInUser();
+    setUser(loggedInUser);
+
     fetchTags().then(tagsData => {
       setTags(tagsData);
     });
@@ -101,9 +108,8 @@ const TagsScreen = () => {
 
   const handleOnPressContinue = async () => {
     try {
-      const userId = 'ad2a582a-1d58-4cc5-a419-5d30fb501e5a';
       const tagIds = selectedTags.map(t => t.id);
-      await assignTagsToUser(userId, tagIds);
+      await assignTagsToUser(user!.id, tagIds);
     } catch (error) {}
   };
 
