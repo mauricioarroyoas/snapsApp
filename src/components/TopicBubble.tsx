@@ -9,7 +9,6 @@ import {
 import { getColors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
 import { Topic } from '../../App';
-
 const getStyles = (isDarkMode: boolean) => {
   const colors = getColors(isDarkMode);
 
