@@ -1,6 +1,6 @@
 import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import TopicsScreen from './src/screens/TopicsScreen';
+import TagsScreen from './src/screens/TagsScreen';
 const styles = StyleSheet.create({
   app: {
     flex: 1,
@@ -14,7 +14,7 @@ const App = () => {
     <SafeAreaProvider>
       <SafeAreaView edges={['top']} style={styles.app}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <TopicsScreen />
+        <TagsScreen />
       </SafeAreaView>
     </SafeAreaProvider>
   );
