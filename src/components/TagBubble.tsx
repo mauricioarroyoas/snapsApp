@@ -6,14 +6,14 @@ import {
   useColorScheme,
   ViewStyle,
 } from 'react-native';
+import { Tag } from '../models/Tag';
 import { getColors } from '../styles/colors';
 import { globalStyles } from '../styles/globalStyles';
-import { Topic } from '../../App';
 const getStyles = (isDarkMode: boolean) => {
   const colors = getColors(isDarkMode);
 
   return StyleSheet.create({
-    topicBubble: {
+    tagBubble: {
       display: 'flex',
       flexDirection: 'row',
       justifyContent: 'center',
@@ -23,7 +23,7 @@ const getStyles = (isDarkMode: boolean) => {
       backgroundColor: '#3A3B47',
       borderRadius: 30,
     },
-    topicBubbleActive: {
+    tagBubbleActive: {
       backgroundColor: colors.primary,
     },
     text: {
@@ -32,26 +32,26 @@ const getStyles = (isDarkMode: boolean) => {
   });
 };
 
-interface TopicBubbleProps {
-  topic: Topic;
+interface TagBubbleProps {
+  tag: Tag;
   containerStyle?: ViewStyle;
-  onPress?: (topicId: number) => void;
+  onPress?: (tagId: string) => void;
 }
-const TopicBubble = ({ topic, containerStyle, onPress }: TopicBubbleProps) => {
+const TagBubble = ({ tag, containerStyle, onPress }: TagBubbleProps) => {
   const [isSelected, setIsSelected] = useState(false);
   const isDarkMode = useColorScheme() === 'dark';
   const styles = getStyles(isDarkMode);
 
   const handlePress = () => {
     setIsSelected(!isSelected);
-    onPress?.(topic.id);
+    onPress?.(tag.id);
   };
 
   return (
     <Pressable
       style={[
-        styles.topicBubble,
-        isSelected && styles.topicBubbleActive,
+        styles.tagBubble,
+        isSelected && styles.tagBubbleActive,
         containerStyle,
       ]}
       onPress={handlePress}
@@ -59,9 +59,9 @@ const TopicBubble = ({ topic, containerStyle, onPress }: TopicBubbleProps) => {
       <Text
         style={[styles.text, globalStyles.textMedium, globalStyles.textBold]}
       >
-        {topic.name}
+        {tag.name}
       </Text>
     </Pressable>
   );
 };
-export default TopicBubble;
+export default TagBubble;
